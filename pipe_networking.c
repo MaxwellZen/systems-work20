@@ -28,9 +28,12 @@ int server_handshake(int *to_client) {
 	char message[HANDSHAKE_BUFFER_SIZE];
 	for (int i = 0; i < HANDSHAKE_BUFFER_SIZE; i++) message[i] = 0;
 	read(from_client, message, HANDSHAKE_BUFFER_SIZE);
-	if (! strcmp(message, ACK)) {
-		printf("Server: 3-way handshake established\n");
+	if (strcmp(message, ACK)) {
+		printf("Server: handshake failed - expected [%s], received [%s]\n", ACK, message);
+		return 0;
 	}
+	printf("Server: received [%s] from client\n", message);
+	printf("3-way handshake established\n");
 	return from_client;
 }
 
@@ -66,6 +69,7 @@ int client_handshake(int *to_server) {
 	remove(name);
 	printf("Client: removed private FIFO\n");
 	write(*to_server, message, HANDSHAKE_BUFFER_SIZE);
-	printf("Client: 3-way handshake established\n");
+	printf("Client: Wrote [%s] to server\n", message);
+	printf("3-way handshake established\n");
 	return from_server;
 }
